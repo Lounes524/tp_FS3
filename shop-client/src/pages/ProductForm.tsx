@@ -26,7 +26,7 @@ const ProductForm = () => {
     const { setToast } = useToastContext();
     const [errors, setErrors] = useState<any>({});
     const [product, setProduct] = useState<MinimalProduct>({
-        price: 0,
+        price: 0, // in centimes
         shop: null,
         categories: [],
         localizedProducts: [
@@ -122,12 +122,12 @@ const ProductForm = () => {
     };
 
     const setPrice = (price: string) => {
-        const convertedPrice = parseFloat(price);
+        const convertedPrice = parseFloat(price.replace(',', '.'));
         if (Number.isNaN(convertedPrice)) {
             setProduct({ ...product, price: 0 });
             return;
         }
-        setProduct({ ...product, price: Number(convertedPrice.toFixed(2)) });
+        setProduct({ ...product, price: Math.round(convertedPrice * 100) });
     };
 
     const setShop = (shop: any) => {
@@ -204,7 +204,7 @@ const ProductForm = () => {
                         required
                         type="number"
                         label="Prix"
-                        value={product.price.toString()}
+                        value={(product.price / 100).toFixed(2)}
                         onChange={(e) => setPrice(e.target.value)}
                         fullWidth
                         InputProps={{
