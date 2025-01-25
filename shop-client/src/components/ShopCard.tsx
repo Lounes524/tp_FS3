@@ -26,6 +26,9 @@ const ShopCard = ({ shop }: Props) => {
                 <Typography variant="h6">
                     {shop.nbProducts} {pluralize('produit', shop.nbProducts)}
                 </Typography>
+                <Typography variant="body2">
+                    {shop.nbDistinctCategories} {pluralize('catégorie', shop.nbDistinctCategories)}
+                </Typography>
                 <Typography sx={{ my: 1.5 }} color="text.secondary">
                     Créée le : {moment(shop.createdAt).format('DD/MM/YYYY')}
                 </Typography>
