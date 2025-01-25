@@ -4,7 +4,7 @@ import fr.fullstack.shopapp.model.OpeningHoursShop;
 import fr.fullstack.shopapp.model.Product;
 import fr.fullstack.shopapp.model.Shop;
 import fr.fullstack.shopapp.repository.ShopRepository;
-import org.hibernate.search.mapper.orm.Search;
+import fr.fullstack.shopapp.repository.ShopSearchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +27,8 @@ public class ShopService {
 
     @Autowired
     private ShopRepository shopRepository;
-
+    @Autowired
+    private ShopSearchRepository shopSearchRepository;
     @Transactional
     public Shop createShop(Shop shop) throws Exception {
         try {
@@ -89,6 +90,20 @@ public class ShopService {
 
         // NONE
         return shopRepository.findByOrderByIdAsc(pageable);
+    }
+    public List<Shop> searchShops(
+            Boolean inVacations,
+            LocalDate startDate,
+            LocalDate endDate,
+            String name
+    ) {
+        if (inVacations == null && startDate == null && endDate == null && (name == null || name.isEmpty())) {
+            return shopRepository.findAll();
+        }
+
+        return shopSearchRepository.searchShops(
+                inVacations, startDate, endDate, name
+        );
     }
 
     @Transactional

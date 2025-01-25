@@ -1,22 +1,92 @@
 package fr.fullstack.shopapp.repository;
 
 import fr.fullstack.shopapp.model.Shop;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.session.SearchSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface ShopSearchRepository extends JpaRepository<Shop, Long> {
-    @Query(nativeQuery = true, value =
-            "SELECT * FROM search_shops(:inVacations, :startDate, :endDate, :name)")
-    List<Shop> searchShops(
-            @Param("inVacations") Boolean inVacations,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate,
-            @Param("name") String name
-    );
+public class ShopSearchRepository {
+    @Autowired
+    private EntityManager entityManager;
+
+    @Transactional(readOnly = true)
+    public List<Shop> searchShops(
+            Boolean inVacations,
+            LocalDate startDate,
+            LocalDate endDate,
+            String name
+    ) {
+        SearchSession searchSession = Search.session(entityManager);
+
+        if (name == null || name.isEmpty()) {
+            return searchSession.search(Shop.class)
+                    .where(f -> {
+                        var predicateBuilder = f.bool();
+
+                        if (inVacations != null) {
+                            predicateBuilder.must(
+                                    f.match().field("inVacations").matching(inVacations)
+                            );
+                        }
+
+                        if (startDate != null && endDate != null) {
+                            predicateBuilder.must(
+                                    f.range().field("createdAt").between(startDate, endDate)
+                            );
+                        } else if (startDate != null) {
+                            predicateBuilder.must(
+                                    f.range().field("createdAt").atLeast(startDate)
+                            );
+                        } else if (endDate != null) {
+                            predicateBuilder.must(
+                                    f.range().field("createdAt").atMost(endDate)
+                            );
+                        }
+
+                        return predicateBuilder;
+                    })
+                    .fetchHits(1000);
+        } else {
+            return searchSession.search(Shop.class)
+                    .where(f -> {
+                        var predicateBuilder = f.bool();
+
+                        predicateBuilder.must(
+                                f.wildcard()
+                                        .field("name")
+                                        .matching("*" + name + "*")
+                        );
+
+                        if (inVacations != null) {
+                            predicateBuilder.must(
+                                    f.match().field("inVacations").matching(inVacations)
+                            );
+                        }
+
+                        if (startDate != null && endDate != null) {
+                            predicateBuilder.must(
+                                    f.range().field("createdAt").between(startDate, endDate)
+                            );
+                        } else if (startDate != null) {
+                            predicateBuilder.must(
+                                    f.range().field("createdAt").atLeast(startDate)
+                            );
+                        } else if (endDate != null) {
+                            predicateBuilder.must(
+                                    f.range().field("createdAt").atMost(endDate)
+                            );
+                        }
+
+                        return predicateBuilder;
+                    })
+                    .fetchHits(1000);
+        }
+    }
 }
