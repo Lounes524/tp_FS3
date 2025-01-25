@@ -109,4 +109,13 @@ public class Shop {
     public void setProducts(List<Product> products) {
         this.products = products;
     }
+
+    @Formula(value = "(SELECT COUNT(DISTINCT pc.category_id) FROM products p " +
+            "JOIN products_categories pc ON p.id = pc.product_id " +
+            "WHERE p.shop_id = id)")
+    private Long nbDistinctCategories;
+
+    public Long getNbDistinctCategories() {
+        return nbDistinctCategories;
+    }
 }

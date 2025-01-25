@@ -69,6 +69,8 @@ public class ShopController {
                               example = "0"),
             @Parameter(name = "size",
                               description = "Number of records per page", example = "5"),
+            @Parameter(name = "nbDistinctCategories",
+                    description = "Number of distinct categories associated with shop's products")
     })
     public ResponseEntity<Page<Shop>> getAllShops(
             Pageable pageable,
