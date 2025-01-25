@@ -12,6 +12,7 @@ import {
     Switch,
     TextField,
     Typography,
+    Grid,
 } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import AddIcon from '@mui/icons-material/Add';
@@ -126,34 +127,35 @@ const ShopForm = () => {
                     {isAddMode ? 'Ajouter une boutique' : 'Modifier la boutique'}
                 </Typography>
 
-                <Box sx={{ display: 'block', ml: 'auto', mr: 'auto', width: '80%', mb: 3 }}>
+                <Box sx={{ display: 'block', ml: 'auto', mr: 'auto', width: '100%', mb: 3 }}>
                     <Divider>Informations de la boutique</Divider>
-                    <FormControl sx={{ mt: 2, width: '50%' }}>
-                        <TextField
-                            autoFocus
-                            required
-                            label="Nom"
-                            value={shop.name}
-                            onChange={(e) => setShop({ ...shop, name: e.target.value })}
-                            fullWidth
-                            error={!!errors?.name}
-                            helperText={errors?.name}
-                            sx={{ marginBottom: 3 }}
-                        />
-
-                        <FormControlLabel
-                            value="start"
-                            control={
-                                <Switch
-                                    checked={shop.inVacations}
-                                    onChange={(e) => setShop({ ...shop, inVacations: e.target.checked })}
-                                    inputProps={{ 'aria-label': 'controlled' }}
-                                />
-                            }
-                            label="En congé"
-                            sx={{ marginBottom: 2 }}
-                        />
-                    </FormControl>
+                    <Grid container spacing={2} sx={{ mt: 2 }}>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                autoFocus
+                                required
+                                label="Nom"
+                                value={shop.name}
+                                onChange={(e) => setShop({ ...shop, name: e.target.value })}
+                                fullWidth
+                                error={!!errors?.name}
+                                helperText={errors?.name}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <FormControlLabel
+                                value="start"
+                                control={
+                                    <Switch
+                                        checked={shop.inVacations}
+                                        onChange={(e) => setShop({ ...shop, inVacations: e.target.checked })}
+                                        inputProps={{ 'aria-label': 'controlled' }}
+                                    />
+                                }
+                                label="En congé"
+                            />
+                        </Grid>
+                    </Grid>
 
                     {/* OpeningHours */}
                     <Divider>Horaires d&apos;ouverture de la boutique</Divider>
@@ -173,7 +175,7 @@ const ShopForm = () => {
                                         display: 'flex',
                                         flexDirection: 'row',
                                         justifyContent: 'center',
-                                        gap: 1,
+                                        gap: 2,
                                     }}
                                 >
                                     <FormControl sx={{ marginBottom: 2 }}>
